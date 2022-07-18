@@ -6,7 +6,7 @@ const ContactInput = ({ name, number }) => {
   return (
     <Wrapper>
       <Title>{name}:</Title>
-      <Number>{number}</Number>
+      <Number>{number}:</Number>
     </Wrapper>
   );
 };

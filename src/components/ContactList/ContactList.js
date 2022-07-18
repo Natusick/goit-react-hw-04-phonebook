@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import ContactInput from "../ContactInput/ContactInput";
@@ -45,6 +44,7 @@ const Button = styled.button`
 `;
 
 ContactList.propTypes = {
+  onDeleteContact: PropTypes.func.isRequired,
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

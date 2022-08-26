@@ -1,70 +1,80 @@
 import { nanoid } from "nanoid";
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { getContacts } from "../../redux/contactsSlice";
+import { addItem } from "../../redux/contactsSlice";
 
-class ContactForm extends Component {
-  state = {
-    name: "",
-    number: "",
+export const ContactForm = () => {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
+  const nameId = nanoid();
+  const numberId = nanoid();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "name") {
+      setName(value);
+    } else if (name === "number") {
+      setNumber(value);
+    }
   };
 
-  handleChange = (e) => {
-    const { name, value } = e.currentTarget;
-
-    this.setState({ [name]: value });
-  };
-
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    this.props.onSubmit(this.state);
-    this.reset();
+    if (
+      contacts.find((item) => item.name.toLowerCase() === name.toLowerCase())
+    ) {
+      toast.error(`Contact ${name} is already exist`);
+      return;
+    }
+    dispatch(addItem({ name, number, id: nanoid() }));
+    toast.success(`Contact ${name} has been added`);
+    return reset;
   };
 
-  reset = () => {
-    this.setState({ name: "", number: "" });
+  const reset = () => {
+    setName({ name: "" });
+    setNumber({ number: "" });
   };
 
-  render() {
-    const { name, number } = this.state;
-    const nameId = nanoid();
-    const numberId = nanoid();
-
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Label htmlFor={nameId}>
-          Name
-          <Input
-            id={nameId}
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-            value={name}
-            onChange={this.handleChange}
-          />
-        </Label>
-        <br />
-        <Label htmlFor={this.numberId}>
-          Number
-          <Input
-            id={numberId}
-            type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-            value={number}
-            onChange={this.handleChange}
-          />
-        </Label>
-        <Button type="submit">Add contact</Button>
-      </Form>
-    );
-  }
-}
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Label htmlFor={nameId}>
+        Name
+        <Input
+          id={nameId}
+          type="text"
+          name="name"
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+          value={name}
+          onChange={handleChange}
+        />
+      </Label>
+      <br />
+      <Label htmlFor={numberId}>
+        Number
+        <Input
+          id={numberId}
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+          value={number}
+          onChange={handleChange}
+        />
+      </Label>
+      <Button type="submit">Add contact</Button>
+    </Form>
+  );
+};
 
 const Form = styled.form`
   border: 1px solid black;
@@ -108,9 +118,5 @@ const Button = styled.button`
     color: white;
   }
 `;
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
 
 export default ContactForm;

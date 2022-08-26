@@ -1,14 +1,22 @@
 import { nanoid } from "nanoid";
 import React from "react";
 import styled from "styled-components";
+import { useDispatch, useSelector } from 'react-redux';
+import { getFilter, filterItems } from "../../redux/contactsSlice";
 
 const Filter = ({ value, onChange }) => {
   const filterId = nanoid();
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
 
   return (
     <Label htmlFor={filterId}>
       Find contacts by name
-      <Input id={filterId} type="text" value={value} onChange={onChange} />
+      <Input 
+      id={filterId} 
+      type="text" 
+      value={filter} 
+      onChange={e => dispatch(filterItems(e.target.value))} />
     </Label>
   );
 };
